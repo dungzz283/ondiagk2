@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Địa Lý 10 - Ôn Tập Cuối Học Kì II</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe; --secondary: #4facfe; --bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.07); --success: #10b981; --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body {
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0; min-height: 100vh; padding: 20px;
+        }
+        .container {
+            max-width: 1000px; margin: 0 auto; background: var(--glass); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        h1 { text-align: center; margin-bottom: 40px; background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card {
+            background: rgba(255,255,255,0.03); border-radius: 20px; padding: 35px; text-align: center;
+            cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card:hover { transform: translateY(-12px); background: rgba(255,255,255,0.12); border-color: var(--primary); }
+        .hidden { display: none !important; }
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: #0f172a; border: none; padding: 14px 32px; border-radius: 50px;
+            font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1.1rem;
+        }
+        .back-btn {
+            position: fixed; bottom: 30px; right: 30px; z-index: 100; padding: 15px 30px;
+        }
+
+        /* Multiple Choice */
+        .question-box {
+            background: rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; 
+            margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .option {
+            background: rgba(255,255,255,0.05); padding: 16px 20px; margin: 10px 0; 
+            border-radius: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
+            transition: all 0.3s;
+        }
+        .option:hover { background: rgba(255,255,255,0.12); border-color: var(--primary); }
+        .option.selected { background: #4facfe; color: #0f172a; border-color: #4facfe; font-weight: 600; }
+        .correct { background: rgba(16,185,129,0.3) !important; border-color: #10b981; }
+        .wrong { background: rgba(239,68,68,0.3) !important; border-color: #ef4444; }
+
+        /* True/False */
+        .tf-card { background:rgba(255,255,255,0.05); border-radius:20px; padding:25px; margin-bottom:30px;
+            border:1px solid rgba(255,255,255,0.1); }
+        .tf-row { display:flex; align-items:flex-start; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.1); gap:15px; }
+        .tf-label { font-weight:700; min-width:38px; color:#00f2fe; font-size:1.15rem; }
+        .tf-content { flex:1; line-height:1.55; }
+        .tf-btn { padding:9px 28px; border:2px solid rgba(255,255,255,0.3); background:transparent; color:#e2e8f0;
+            border-radius:50px; cursor:pointer; font-weight:600; }
+        .tf-btn.selected { background:#4facfe; color:#0f172a; border-color:#4facfe; }
+
+        /* Short Answer */
+        .short-card { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 25px; 
+            margin-bottom: 25px; border-left: 6px solid var(--primary); }
+        .short-table { width: 100%; border-collapse: collapse; margin: 20px auto; min-width: 600px; }
+        .short-table th, .short-table td { border: 1px solid rgba(255,255,255,0.2); padding: 12px; text-align: center; }
+        .short-table th { background: rgba(255,255,255,0.1); font-weight: 600; }
+        .input-group { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        input[type="text"] { width: 100%; max-width: 380px; padding: 16px; border: 2px solid rgba(255,255,255,0.4); 
+            background: rgba(255,255,255,0.08); color: #e2e8f0; border-radius: 12px; font-size: 1.5rem; 
+            text-align: center; outline: none; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,254,0.3); }
+        .short-feedback { font-weight: bold; padding: 14px 20px; border-radius: 12px; text-align: center; 
+            display: none; font-size: 1.25rem; min-height: 55px; align-items: center; justify-content: center; }
+        .short-correct { background: rgba(16,185,129,0.3); color: var(--success); }
+        .short-wrong { background: rgba(239,68,68,0.3); color: var(--danger); }
+        .note { font-size: 0.95rem; color: #94a3b8; margin-top: 10px; text-align: center; }
+
+        table { width:100%; border-collapse:collapse; margin:15px 0; }
+        th, td { border:1px solid rgba(255,255,255,0.3); padding:10px; text-align:center; }
+        th { background:rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Home Screen -->
+    <div id="home-screen">
+        <h1>ĐỊA LÝ 10 - ÔN TẬP CUỐI HỌC KÌ II</h1>
+        <div class="menu-grid">
+            <div class="card" onclick="startMode('multiple')">
+                <h3>📝 Trắc Nghiệm Chọn Đáp Án</h3>
+                <p>40 câu trắc nghiệm (Chương 8-9-10)</p>
+            </div>
+            <div class="card" onclick="startMode('truefalse')">
+                <h3>✅ Đúng / Sai</h3>
+                <p>7 câu hỏi đúng sai có bảng số liệu</p>
+            </div>
+            <div class="card" onclick="startMode('short')">
+                <h3>✍️ Trả Lời Ngắn</h3>
+                <p>Tính toán từ bảng số liệu</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multiple Choice -->
+    <div id="multiple-section" class="hidden">
+        <h1 style="font-size:2rem; margin-bottom:30px;">TRẮC NGHIỆM CHỌN ĐÁP ÁN</h1>
+        <div id="mc-question-container"></div>
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn" onclick="submitMultiple()">Nộp Bài</button>
+        </div>
+    </div>
+
+    <!-- True/False -->
+    <div id="truefalse-section" class="hidden">
+        <h1 style="font-size:2rem; margin-bottom:30px;">PHẦN ĐÚNG / SAI</h1>
+        <div id="tf-quiz-content"></div>
+        <div style="text-align:center; margin:40px 0;">
+            <button class="btn" onclick="submitTrueFalse()">Nộp Bài & Xem Kết Quả</button>
+        </div>
+        <div id="tf-result" class="hidden" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- Short Answer -->
+    <div id="short-section" class="hidden">
+        <h1 style="font-size:2.1rem; margin-bottom:30px;">CÂU HỎI TRẢ LỜI NGẮN</h1>
+        <p style="text-align:center; margin-bottom:30px; color:#94a3b8;">
+            Tính toán dựa trên bảng số liệu và điền kết quả (làm tròn theo yêu cầu của đề)
+        </p>
+        <div id="short-quiz-content"></div>
+        <div style="text-align:center; margin:40px 0;">
+            <button class="btn" id="short-submit-btn">Nộp Bài & Xem Đáp Án</button>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="mc-result-screen" class="hidden" style="text-align:center;">
+        <h2>Kết Quả: <span id="mc-final-score"></span></h2>
+        <div id="mc-review-section" style="max-height:500px; overflow-y:auto; margin:30px 0; text-align:left;"></div>
+        <button class="btn" onclick="backToHome()">Quay Lại Màn Hình Chính</button>
+    </div>
+</div>
+
+<button class="btn back-btn hidden" id="back-btn" onclick="backToHome()">← Quay Lại</button>
+
+<script>
+// ==================== DỮ LIỆU 40 CÂU TRẮC NGHIỆM ====================
+const multipleQuestions = [
+    { q: "Quy mô dân số của một quốc gia là", a: ["tổng số dân của quốc gia.", "số người trên diện tích đất.", "mật độ trung bình dân số.", "số dân quốc gia ở các nước."], c: 0 },
+    { q: "Dân số thế giới năm 2020 là khoảng", a: ["khoảng 6 tỉ người.", "khoảng 7 tỉ người.", "trên 7,8 tỉ người.", "trên 8,5 tỉ người."], c: 2 },
+    { q: "Nước có số dân đông nhất thế giới hiện nay là", a: ["Hoa Kì.", "Liên bang Nga.", "Trung Quốc.", "Ấn Độ."], c: 3 },
+    { q: "Tỉ suất gia tăng dân số tự nhiên là", a: ["hiệu số giữa tỉ suất sinh và tỉ suất tử.", "tổng số giữa tỉ suất sinh và tỉ suất tử.", "hiệu số giữa người xuất cư, nhập cư.", "tổng số giữa người xuất cư, nhập cư."], c: 0 },
+    { q: "Gia tăng cơ học không có ảnh hưởng lớn đến vấn đề dân số của", a: ["quốc gia.", "các vùng.", "thế giới.", "khu vực."], c: 2 },
+    { q: "Tỉ số gia tăng dân số cơ học là", a: ["hiệu số giữa tỉ suất sinh và tỉ suất tử.", "tổng số giữa tỉ suất sinh và tỉ suất tử.", "hiệu số giữa tỉ suất xuất cư và nhập cư.", "tổng số giữa người xuất cư, nhập cư."], c: 2 },
+    { q: "Động lực phát triển dân số là", a: ["tỉ suất sinh thô.", "số người nhập cư.", "gia tăng tự nhiên.", "gia tăng cơ học."], c: 2 },
+    { q: "Cơ cấu sinh học của dân số gồm cơ cấu theo", a: ["lao động và giới tính.", "lao động và theo tuổi.", "tuổi và theo giới tính.", "tuổi và trình độ văn hoá."], c: 2 },
+    { q: "Cơ cấu xã hội của dân số gồm cơ cấu theo", a: ["giới tính và theo lao động.", "lao động và theo tuổi.", "trình độ văn hoá và theo giới tính.", "lao động và trình độ văn hoá."], c: 3 },
+    { q: "Tỉ số giới tính được tính bằng", a: ["số nam trên tổng dân.", "số nữ trên tổng dân.", "số nam trên số nữ.", "số nữ trên số nam."], c: 2 },
+    { q: "Nhân tố nào sau đây không ảnh hưởng đến cơ cấu theo giới tính?", a: ["Kinh tế.", "Thiện tai.", "Tuổi thọ.", "Chuyển cư."], c: 1 },
+    { q: "Nguyên nhân nào sau đây có tác động mạnh mẽ nhất làm cho ở các nước đang phát triển có nam nhiều hơn nữ?", a: ["Tuổi thọ.", "Tự nhiên.", "Kinh tế.", "Tập quán."], c: 3 },
+    { q: "Dân số của một quốc gia thường được phân ra các độ tuổi", a: ["0-15 tuổi, 16-64 tuổi, 65 tuổi trở lên.", "0-14 tuổi, 15-64 tuổi, 65 tuổi trở lên.", "0-14 tuổi, 15-65 tuổi, 66 tuổi trở lên.", "0-15 tuổi, 15-60 tuổi, 61 tuổi trở lên."], c: 1 },
+    { q: "Tiêu chí nào sau đây được sử dụng để thể hiện tình hình phân bố dân cư?", a: ["Quy mô số dân.", "Mật độ dân số.", "Cơ cấu dân số.", "Loại quần cư."], c: 1 },
+    { q: "Khu vực có mật độ dân số cao nhất thế giới hiện nay là", a: ["Tây Âu.", "Đông Á.", "Ca-ri-bê.", "Nam Âu."], c: 1 },
+    { q: "Khu vực có mật độ dân số thấp nhất thế giới hiện nay là", a: ["Trung Phi.", "Bắc Mỹ.", "châu Đại Dương.", "Trung - Nam Á."], c: 2 },
+    { q: "Phát biểu nào sau đây không đúng với đặc điểm của đô thị hoá?", a: ["Là một quá trình về văn hoá - xã hội.", "Quy mô và số lượng đô thị tăng nhanh.", "Tăng nhanh sự tập trung dân thành thị.", "Lối sống thành thị phổ biến rộng rãi."], c: 0 },
+    { q: "Hoạt động có tác động trực tiếp đến việc phát triển đô thị hoá là", a: ["công nghiệp.", "giao thông vận tải.", "du lịch.", "thương mại."], c: 0 },
+    { q: "Căn cứ vào nguồn gốc, nguồn lực có thể phân loại thành", a: ["Vị trí địa lí, kinh tế - xã hội, trong nước.", "Vị trí địa lí, tự nhiên, kinh tế - xã hội.", "Vị trí địa lí, kinh tế - xã hội, ngoài nước.", "Kinh tế - xã hội, trong nước, ngoài nước."], c: 1 },
+    { q: "Căn cứ vào phạm vi lãnh thổ, có thể phân chia thành nguồn lực", a: ["nội lực, ngoại lực.", "nội lực, lao động.", "ngoại lực, dân số.", "dân số, lao động."], c: 0 },
+    { q: "Nguồn lực nào sau đây tạo thuận lợi (hay khó khăn) trong việc tiếp cận giữa các vùng trong một nước?", a: ["Đất đai, biển.", "Vị trí địa lí.", "Khoa học.", "Lao động."], c: 1 },
+    { q: "Nguồn lực nào sau đây có vai trò quyết định đối với sự phát triển kinh tế của mỗi quốc gia?", a: ["Khoa học công nghệ.", "Đường lối chính sách.", "Tài nguyên thiên nhiên.", "Dân cư và lao động."], c: 0 },
+    { q: "Cơ cấu ngành kinh tế gồm các bộ phận nào sau đây?", a: ["Công nghiệp - xây dựng, dịch vụ và khu vực trong nước.", "Nông - lâm - ngư nghiệp, công nghiệp - xây dựng và dịch vụ.", "Nông - lâm - ngư nghiệp, khu vực ở trong nước và dịch vụ.", "Công nghiệp - xây dựng, dịch vụ và khu vực ngoài nước."], c: 1 },
+    { q: "Cơ cấu thành phần kinh tế gồm", a: ["khu vực kinh tế trong nước, công nghiệp - xây dựng, dịch vụ.", "khu vực có vốn đầu tư nước ngoài, nông - lâm - ngư nghiệp.", "khu vực kinh tế trong nước, khu vực có vốn đầu tư nước ngoài.", "khu vực có vốn đầu tư nước ngoài, công nghiệp - xây dựng."], c: 2 },
+    { q: "Cơ cấu lãnh thổ gồm", a: ["toàn cầu và khu vực, quốc gia, vùng.", "toàn cầu và khu vực, vùng, dịch vụ.", "công nghiệp - xây dựng, quốc gia.", "nông - lâm - ngư nghiệp, toàn cầu."], c: 0 },
+    { q: "Thành phần nào sau đây không được xếp vào cơ cấu thành phần kinh tế của một quốc gia?", a: ["Nhà nước.", "Ngoài Nhà nước.", "Khu vực có vốn đầu tư nước ngoài.", "Nông - lâm - ngư nghiệp."], c: 3 },
+    { q: "Đặc điểm nổi bật về cơ cấu ngành kinh tế của các nước phát triển là", a: ["nông - lâm - ngư nghiệp rất nhỏ, dịch vụ rất lớn.", "dịch vụ rất lớn, công nghiệp - xây dựng rất nhỏ.", "công nghiệp - xây dựng rất lớn, dịch vụ rất nhỏ.", "nông - lâm - ngư nghiệp rất lớn, dịch vụ rất nhỏ."], c: 0 },
+    { q: "Cây lương thực bao gồm", a: ["lúa gạo, lúa mì, ngô.", "lúa gạo, lúa mì, ngô, lạc.", "lúa gạo, lúa mì, ngô, đậu.", "lúa gạo, lúa mì, ngô, mía."], c: 0 },
+    { q: "Đặc điểm sinh thái của cây lúa gạo là ưa khí hậu", a: ["nóng, đất ẩm, nhiều mùn, dễ thoát nước.", "ấm, khô, đất đai màu mỡ, nhiều phân bón.", "nóng, ẩm, chân ruộng ngập nước, phù sa.", "nóng, thích nghi với sự dao động khí hậu."], c: 2 },
+    { q: "Đặc điểm sinh thái của cây lúa mì là ưa khí hậu", a: ["nóng, đất ẩm, nhiều mùn, dễ thoát nước.", "ấm, khô, đất đai màu mỡ, nhiều phân bón.", "nóng, ẩm, chân ruộng ngập nước, phù sa.", "nóng, thích nghi với sự dao động khí hậu."], c: 1 },
+    { q: "Khu vực châu Á gió mùa là nơi nổi tiếng về cây", a: ["lúa nước.", "lúa mì.", "ngô.", "khoai tây."], c: 0 },
+    { q: "Vai trò quan trọng của rừng đối với môi trường là", a: ["điều hòa lượng nước trên mặt đất.", "cung cấp lâm sản phục vụ sản xuất.", "cung cấp các dược liệu chữa bệnh.", "nguồn gen rất quý giá của tự nhiên."], c: 0 },
+    { q: "Loại rừng trồng nào sau đây hiện nay có diện tích lớn hơn cả?", a: ["Sản xuất.", "Phòng hộ.", "Đặc dụng.", "Khác."], c: 0 },
+    { q: "Nguồn thức ăn đối với chăn nuôi đóng vai trò", a: ["cơ sở.", "quyết định.", "tiền đề.", "quan trọng."], c: 1 },
+    { q: "Phần lớn thức ăn của ngành chăn nuôi đều lấy từ nguồn nào sau đây?", a: ["Tự nhiên.", "Trồng trọt.", "Công nghiệp.", "Thủy sản."], c: 1 },
+    { q: "Loại vật nuôi nào sau đây thuộc gia súc lớn?", a: ["Trâu.", "Lợn.", "Cừu.", "Dê."], c: 0 },
+    { q: "Loại vật nuôi phổ biến khắp nơi trên thế giới là", a: ["Gà.", "Lợn.", "Cừu.", "Bò."], c: 0 },
+    { q: "Trong nông nghiệp, trang trại là hình thức sản xuất", a: ["nhỏ.", "lớn.", "cơ sở.", "đi đầu"], c: 1 },
+    { q: "Đặc điểm của hình thức tổ chức lãnh thổ vùng nông nghiệp là", a: ["sản xuất nhằm thoả mãn nhu cầu tiêu dùng của gia đình.", "chủ yếu là sản xuất hàng hoá, quy mô đất đai và vốn lớn.", "ra đời dựa trên tinh thần tự nguyện của các hộ nông dân.", "gồm các địa phương tương tự nhau về điều kiện sinh thái."], c: 1 },
+    { q: "Vùng nông nghiệp không có ý nghĩa nào sau đây?", a: ["Làm cho phân bố nông nghiệp hợp lí.", "Cơ sở để hình thành vùng công nghiệp.", "Tạo vùng chuyên môn hoá nông nghiệp.", "Sản xuất phù hợp với điều kiện sinh thái."], c: 1 }
+];
+
+// ==================== DỮ LIỆU 7 CÂU ĐÚNG / SAI ====================
+const trueFalseData = [
+    { title: "Câu 1: Cho bảng số liệu: QUY MÔ DÂN SỐ THẾ GIỚI, GIAI ĐOẠN 1950 – 2050 (Đơn vị: tỉ người)",
+      table: `<table><tr><th>Khu vực</th><th>1950</th><th>2000</th><th>2020</th><th>2050 (dự báo)</th></tr>
+              <tr><td>Toàn thế giới</td><td>2,5</td><td>6,2</td><td>7,8</td><td>9,7</td></tr>
+              <tr><td>Các nước phát triển</td><td>0,8</td><td>1,2</td><td>1,3</td><td>1,3</td></tr>
+              <tr><td>Các nước đang phát triển</td><td>1,7</td><td>5,0</td><td>6,5</td><td>8,4</td></tr></table>`,
+      statements: [
+        { text: "Số dân của toàn thế giới giai đoạn 1950 – 2050 tăng liên tục.", correct: true },
+        { text: "Phần lớn dân cư trên thế giới tập trung ở nhóm các nước phát triển.", correct: false },
+        { text: "Dân số thế giới năm 2020 gấp 4,12 lần dân số năm 1950.", correct: false },
+        { text: "Để thể hiện quy mô dân số thế giới giai đoạn 1950 – 2050, biểu đồ thích hợp nhất là biểu đồ cột.", correct: true }
+      ]
+    },
+    { title: "Câu 2: Cho đoạn thông tin sau", passage: "Dân số luôn là vấn đề được quan tâm hàng đầu của mỗi quốc gia vì nó tác động trực tiếp đến sự phát triển kinh tế - xã hội và môi trường. Dân số thế giới vẫn gia tăng hàng năm, đến tháng 11/2022 đã cán mốc 8 tỷ người.",
+      statements: [
+        { text: "Tỉ suất sinh thô là số trẻ em sinh ra trong năm so với dân số trung bình cùng thời điểm.", correct: true },
+        { text: "Hiện nay trên thế giới, tỉ suất sinh thô và tỉ suất tử thô đều tăng nhanh.", correct: false },
+        { text: "Tỉ suất gia tăng dân số tự nhiên là tổng của tỉ suất sinh thô và tỉ suất tử thô.", correct: false },
+        { text: "Dân số thế giới tăng lên hay giảm đi là do sinh đẻ và tử vong.", correct: true }
+      ]
+    },
+    { title: "Câu 3: Cho bảng số liệu: TỈ SUẤT SINH THÔ VÀ TỬ THÔ CỦA NƯỚC TA, GIAI ĐOẠN 2010 – 2021.",
+      table: `<table><tr><th>Năm</th><th>2010</th><th>2015</th><th>2018</th><th>2021</th></tr>
+              <tr><td>Tỉ suất sinh thô (‰)</td><td>17,1</td><td>16,2</td><td>14,6</td><td>15,7</td></tr>
+              <tr><td>Tỉ suất tử thô (‰)</td><td>6,8</td><td>6,8</td><td>6,8</td><td>6,4</td></tr></table>`,
+      statements: [
+        { text: "Tỉ suất sinh thô có xu hướng tăng.", correct: false },
+        { text: "Tỉ suất tử thô có xu hướng ổn định năm 2021 giảm.", correct: true },
+        { text: "Gia tăng tự nhiên có xu hướng tăng.", correct: false },
+        { text: "Gia tăng tự nhiên cao nhất năm 2010, thấp nhất năm 2018.", correct: true }
+      ]
+    },
+    { title: "Câu 4: Cho bảng số liệu: DIỆN TÍCH VÀ DÂN SỐ CỦA MỘT SỐ TỈNH NĂM 2018",
+      table: `<table><tr><th>Tỉnh</th><th>Thái Bình</th><th>Phú Yên</th><th>Kon Tum</th><th>Đồng Tháp</th></tr>
+              <tr><td>Diện tích (km²)</td><td>1586</td><td>5023</td><td>9674</td><td>3384</td></tr>
+              <tr><td>Dân số (nghìn người)</td><td>1793</td><td>910</td><td>535</td><td>1993</td></tr></table>`,
+      statements: [
+        { text: "Mật độ dân số của Thái Bình cao hơn Kon Tum.", correct: true },
+        { text: "Mật độ dân số của Phú Yên là 1812 người/km².", correct: false },
+        { text: "Để thể hiện dân số và diện tích của một số địa phương của nước ta thì dùng biểu đồ tròn.", correct: false },
+        { text: "Diện tích của Thái Bình là rộng nhất.", correct: false }
+      ]
+    },
+    { title: "Câu 5: Cho thông tin sau", passage: "Nhật Bản là một quần đảo nằm giữa biển khơi, chịu ảnh hưởng nặng nề của thiên tai, nghèo tài nguyên nhưng với một quyết tâm cao, chiến lược phát triển đúng đắn, Nhật Bản đã vươn trở thành một cường quốc kinh tế.",
+      statements: [
+        { text: "Mỗi nguồn lực có vai trò nhất định đối với phát triển kinh tế Nhật Bản.", correct: true },
+        { text: "Sự thành công của Nhật Bản là do nguồn lực kinh tế - xã hội.", correct: true },
+        { text: "Để trở thành cường quốc kinh tế Nhật Bản đã có chính sách phát triển kinh tế đúng đắn.", correct: true },
+        { text: "Các nguồn lực bên ngoài là nhân tố quyết định giúp kinh tế Nhật Bản phát triển nhanh.", correct: false }
+      ]
+    },
+    { title: "Câu 6: Cho bảng số liệu: CƠ CẤU GDP CỦA THẾ GIỚI PHÂN THEO NGÀNH KINH TẾ, NĂM 2000 VÀ NĂM 2019 (Đơn vị: %)",
+      table: `<table><tr><th>Năm</th><th>Nông nghiệp, lâm nghiệp và thủy sản</th><th>Công nghiệp - xây dựng</th><th>Dịch vụ</th></tr>
+              <tr><td>2000</td><td>5,2</td><td>30,7</td><td>64,1</td></tr>
+              <tr><td>2019</td><td>4,2</td><td>27,9</td><td>67,9</td></tr></table>`,
+      statements: [
+        { text: "Ngành nông nghiệp, lâm nghiệp và thủy sản luôn chiếm tỉ trọng thấp nhất.", correct: true },
+        { text: "Từ năm 2000 đến năm 2019, cơ cấu GDP của thế giới đang chuyển dịch theo hướng tăng tỉ trọng của ngành công nghiệp - xây dựng.", correct: false },
+        { text: "Năm 2019, tỉ trọng ngành dịch vụ lớn hơn tỉ trọng ngành công nghiệp - xây dựng.", correct: true },
+        { text: "Từ năm 2000 đến năm 2019, tỉ trọng ngành nông nghiệp, lâm nghiệp và thủy sản giảm.", correct: true }
+      ]
+    },
+    { title: "Câu 7: Cho bảng số liệu: CƠ CẤU GDP CỦA THẾ GIỚI PHÂN THEO NGÀNH KINH TẾ, NĂM 2000 VÀ NĂM 2019 (Đơn vị: %)",
+      table: `<table><tr><th>Năm</th><th>Nông nghiệp, lâm nghiệp và thủy sản</th><th>Công nghiệp - xây dựng</th><th>Dịch vụ</th></tr>
+              <tr><td>2000</td><td>5,2</td><td>30,7</td><td>64,1</td></tr>
+              <tr><td>2019</td><td>4,2</td><td>27,9</td><td>67,9</td></tr></table>`,
+      statements: [
+        { text: "Ngành nông nghiệp, lâm nghiệp và thủy sản luôn chiếm tỉ trọng thấp nhất.", correct: true },
+        { text: "Từ năm 2000 đến năm 2019, cơ cấu GDP của thế giới đang chuyển dịch theo hướng tăng tỉ trọng của ngành công nghiệp - xây dựng.", correct: false },
+        { text: "Năm 2019, tỉ trọng ngành dịch vụ lớn hơn tỉ trọng ngành công nghiệp - xây dựng.", correct: true },
+        { text: "Từ năm 2000 đến năm 2019, tỉ trọng ngành nông nghiệp, lâm nghiệp và thủy sản giảm.", correct: true }
+      ]
+    }
+];
+
+// ==================== DỮ LIỆU TRẢ LỜI NGẮN ====================
+const shortData = [
+    { id: 1, title: "Câu 1. Mật độ dân số Hoa Kỳ năm 2020",
+      table: `<table class="short-table"><tr><th colspan="2">Dữ liệu năm 2020</th></tr><tr><td>Dân số</td><td>331,5 triệu người</td></tr><tr><td>Diện tích lãnh thổ</td><td>9,8 triệu km²</td></tr></table>`,
+      desc: "Tính mật độ dân số của Hoa Kỳ năm 2020 (đơn vị: người/km²) (làm tròn đến hàng đơn vị).",
+      ans: "34" },
+    { id: 2, title: "Câu 2. Tỉ lệ gia tăng dân số tự nhiên của Bun-ga-ri năm 2020",
+      table: `<table class="short-table"><tr><th>Nước</th><th>Nam Phi</th><th>Ma-lai-xi-a</th><th>Bun-ga-ri</th><th>An-ba-ni</th></tr>
+              <tr><td>Tỉ suất sinh (%)</td><td>20,7</td><td>16,8</td><td>9,0</td><td>11,8</td></tr>
+              <tr><td>Tỉ suất tử (%)</td><td>9,5</td><td>5,1</td><td>15,4</td><td>7,8</td></tr></table>`,
+      desc: "Tính tỉ lệ gia tăng dân số tự nhiên của Bun-ga-ri năm 2020.",
+      ans: "-0,64" },
+    { id: 3, title: "Câu 3. Tỉ trọng GDP của Trung Quốc so với thế giới năm 2004",
+      table: `<table class="short-table"><tr><th>Năm</th><th>2004</th></tr><tr><td>Trung Quốc</td><td>1649,3</td></tr><tr><td>Thế giới</td><td>40887,8</td></tr></table>`,
+      desc: "Tính tỉ trọng GDP của Trung Quốc so với thế giới năm 2004 (%).",
+      ans: "4,03" },
+    { id: 4, title: "Câu 4. Năng suất lúa vùng Đồng bằng sông Cửu Long năm 2021",
+      table: `<table class="short-table"><tr><th colspan="2">Dữ liệu năm 2021</th></tr><tr><td>Sản lượng lúa</td><td>24 327,3 nghìn tấn</td></tr><tr><td>Diện tích trồng lúa</td><td>3 898,6 nghìn ha</td></tr></table>`,
+      desc: "Tính năng suất lúa của vùng Đồng bằng sông Cửu Long năm 2021 (đơn vị: tạ/ha) (làm tròn đến hàng thập phân thứ nhất).",
+      ans: "62,4" }
+];
+
+// ==================== HÀM CHUNG ====================
+function shuffle(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function normalizeAnswer(str) {
+    if (!str) return "";
+    let s = str.toString().trim();
+    s = s.replace(/^%+|%+$/g, '');
+    s = s.replace(/,/g, '.');
+    s = s.trim();
+    return s;
+}
+
+// ==================== NAVIGATION ====================
+function startMode(mode) {
+    document.getElementById('home-screen').classList.add('hidden');
+    document.getElementById('back-btn').classList.remove('hidden');
+
+    if (mode === 'multiple') {
+        document.getElementById('multiple-section').classList.remove('hidden');
+        initMultipleChoice();
+    } else if (mode === 'truefalse') {
+        document.getElementById('truefalse-section').classList.remove('hidden');
+        initTrueFalse();
+    } else if (mode === 'short') {
+        document.getElementById('short-section').classList.remove('hidden');
+        initShortAnswer();
+    }
+}
+
+function backToHome() {
+    document.querySelectorAll('#multiple-section, #truefalse-section, #short-section, #mc-result-screen').forEach(el => el.classList.add('hidden'));
+    document.getElementById('home-screen').classList.remove('hidden');
+    document.getElementById('back-btn').classList.add('hidden');
+    document.getElementById('tf-result').classList.add('hidden');
+}
+
+// ==================== MULTIPLE CHOICE ====================
+let mcQuestions = [], mcUserAnswers = [];
+
+function initMultipleChoice() {
+    let shuffled = shuffle([...multipleQuestions]);
+    mcQuestions = shuffled.map(q => {
+        const correctText = q.a[q.c];
+        const shuffledOpts = shuffle([...q.a]);
+        return { ...q, options: shuffledOpts, correctText: correctText };
+    });
+    renderMultiple();
+}
+
+function renderMultiple() {
+    const container = document.getElementById('mc-question-container');
+    container.innerHTML = mcQuestions.map((q, i) => `
+        <div class="question-box">
+            <p style="font-size:1.1rem; margin-bottom:18px;"><strong>Câu ${i+1}: ${q.q}</strong></p>
+            <div>
+                ${q.options.map((opt, idx) => `
+                    <div class="option" onclick="mcSelect(this, ${i}, '${opt.replace(/'/g, "\\'")}')">
+                        ${String.fromCharCode(65 + idx)}. ${opt}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+    mcUserAnswers = new Array(mcQuestions.length).fill(null);
+}
+
+function mcSelect(el, i, text) {
+    const parent = el.parentElement;
+    parent.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    mcUserAnswers[i] = text;
+}
+
+function submitMultiple() {
+    let score = 0;
+    const reviewHTML = mcQuestions.map((q, i) => {
+        const userAns = mcUserAnswers[i];
+        const isCorrect = userAns === q.correctText;
+        if (isCorrect) score++;
+        return `
+            <div style="padding:18px; margin:15px 0; border-radius:16px; border-left:6px solid ${isCorrect ? '#10b981' : '#ef4444'}; background:rgba(255,255,255,0.05);">
+                <strong>Câu ${i+1}: ${q.q}</strong><br><br>
+                Bạn chọn: <span style="color:${isCorrect ? '#10b981' : '#ef4444'}">${userAns ? userAns : 'Chưa chọn'}</span><br>
+                <span style="color:#10b981">Đáp án đúng: ${q.correctText}</span>
+            </div>`;
+    }).join('');
+
+    document.getElementById('multiple-section').classList.add('hidden');
+    document.getElementById('mc-result-screen').classList.remove('hidden');
+    document.getElementById('mc-final-score').innerHTML = `${score}/${mcQuestions.length} <span style="font-size:1.2rem; color:#94a3b8;">(${Math.round(score/mcQuestions.length*100)}%)</span>`;
+    document.getElementById('mc-review-section').innerHTML = reviewHTML;
+}
+
+// ==================== TRUE / FALSE ====================
+let tfShuffledQuestions = [], tfShuffledStatements = [], tfUserAnswers = [];
+
+function initTrueFalse() {
+    const container = document.getElementById('tf-quiz-content');
+    container.innerHTML = '';
+    tfUserAnswers = [];
+    tfShuffledQuestions = shuffle(trueFalseData);
+    tfShuffledStatements = [];
+
+    tfShuffledQuestions.forEach((item, qIdx) => {
+        const shuffledSt = shuffle(item.statements);
+        tfShuffledStatements[qIdx] = shuffledSt;
+
+        let html = `<div class="tf-card">
+            <h3 style="margin-bottom:18px; color:#00f2fe;">${item.title}</h3>
+            ${item.table ? `<div style="overflow-x:auto;">${item.table}</div>` : ''}
+            ${item.passage ? `<p style="margin:15px 0; font-style:italic;">${item.passage}</p>` : ''}
+            <div>`;
+
+        shuffledSt.forEach((st, sIdx) => {
+            html += `
+                <div class="tf-row">
+                    <span class="tf-label">${String.fromCharCode(65 + sIdx)})</span>
+                    <div class="tf-content">${st.text}</div>
+                    <div>
+                        <button class="tf-btn" onclick="selectTF(${qIdx},${sIdx}, true, this)">Đúng</button>
+                        <button class="tf-btn" onclick="selectTF(${qIdx},${sIdx}, false, this)">Sai</button>
+                    </div>
+                </div>`;
+        });
+
+        html += `</div></div>`;
+        container.innerHTML += html;
+        tfUserAnswers[qIdx] = Array(shuffledSt.length).fill(null);
+    });
+}
+
+function selectTF(qIdx, sIdx, isTrue, btn) {
+    tfUserAnswers[qIdx][sIdx] = isTrue;
+    const row = btn.parentElement.parentElement;
+    row.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+}
+
+function submitTrueFalse() {
+    let totalCorrect = 0;
+    let html = '<h2 style="color:#fbbf24; text-align:center; margin-bottom:25px;">Kết quả Phần Đúng / Sai</h2>';
+
+    tfShuffledQuestions.forEach((item, qIdx) => {
+        html += `<h3 style="margin:25px 0 12px; color:#00f2fe;">${item.title}</h3>`;
+        const shuffledSt = tfShuffledStatements[qIdx];
+
+        shuffledSt.forEach((st, sIdx) => {
+            const userChoice = tfUserAnswers[qIdx][sIdx];
+            const isCorrect = st.correct;
+            if (userChoice === isCorrect) totalCorrect++;
+
+            const userText = userChoice === null ? "Chưa trả lời" : (userChoice ? "Đúng" : "Sai");
+            const statusClass = (userChoice === isCorrect) ? "result-correct" : "result-wrong";
+
+            html += `
+                <div class="result-item ${statusClass}" style="padding:16px; margin:12px 0; border-radius:16px; line-height:1.5;">
+                    <strong>${String.fromCharCode(65 + sIdx)}. ${st.text}</strong><br><br>
+                    <span style="color:${userChoice === isCorrect ? '#10b981' : '#ef4444'}">Bạn chọn: ${userText}</span><br>
+                    <span style="color:#10b981">Đáp án đúng: ${isCorrect ? "Đúng" : "Sai"}</span>
+                </div>`;
+        });
+    });
+
+    const totalQuestions = trueFalseData.reduce((sum, q) => sum + q.statements.length, 0);
+    html += `<h2 style="text-align:center; margin-top:35px; color:#10b981; font-size:1.6rem;">
+                Bạn trả lời đúng ${totalCorrect} / ${totalQuestions} ý
+             </h2>`;
+
+    document.getElementById('tf-result').innerHTML = html;
+    document.getElementById('tf-result').classList.remove('hidden');
+}
+
+// ==================== SHORT ANSWER ====================
+let currentShortQuestions = [];
+
+function initShortAnswer() {
+    currentShortQuestions = shuffle([...shortData]);
+    const container = document.getElementById('short-quiz-content');
+    container.innerHTML = currentShortQuestions.map((q, index) => `
+        <div class="short-card">
+            <div style="font-weight:600; font-size:1.1rem; margin-bottom:15px;">${q.title}</div>
+            ${q.table || ''}
+            <p style="margin: 20px 0; line-height:1.6;">${q.desc}</p>
+            <div class="input-group">
+                <input type="text" id="short-ans-${index}" placeholder="Nhập đáp án...">
+                <div class="short-feedback" id="short-fb-${index}"></div>
+                <div class="note">Ghi % hay không ghi % đều được • Dùng dấu phẩy hoặc dấu chấm đều chấp nhận</div>
+            </div>
+        </div>
+    `).join('');
+
+    document.getElementById('short-submit-btn').onclick = function() {
+        currentShortQuestions.forEach((q, index) => {
+            const input = document.getElementById(`short-ans-${index}`);
+            const fb = document.getElementById(`short-fb-${index}`);
+            const userInput = input.value.trim();
+
+            const userNormalized = normalizeAnswer(userInput);
+            const correctNormalized = normalizeAnswer(q.ans);
+
+            fb.style.display = 'flex';
+            if (userNormalized === correctNormalized) {
+                fb.innerHTML = "✓ Chính xác!";
+                fb.className = "short-feedback short-correct";
+            } else {
+                fb.innerHTML = `✕ Sai. Đáp án đúng là: <strong>${q.ans}</strong>`;
+                fb.className = "short-feedback short-wrong";
+            }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+}
+
+// Khởi tạo
+window.onload = () => {};
+</script>
+</body>
+</html>
